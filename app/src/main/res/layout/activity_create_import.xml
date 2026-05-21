@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:padding="24dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <EditText android:id="@+id/etPassword" android:hint="Mật khẩu mới" android:inputType="textPassword" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnCreate" android:text="Tạo ví mới" android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-    <EditText android:id="@+id/etSeed" android:hint="12 từ khóa" android:layout_marginTop="24dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnImport" android:text="Khôi phục" android:layout_marginTop="12dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-</LinearLayout>
