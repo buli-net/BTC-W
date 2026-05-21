@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ÉP XÓA VÍ CŨ - bỏ qua mật khẩu
-        WalletManager.deleteWallet(this)
-
-        // Vào thẳng màn tạo/khôi phục ví
-        startActivity(Intent(this, CreateImportActivity::class.java))
+        
+        if (WalletManager.hasWallet(this)) {
+            // Đã có ví → vào ví luôn
+            startActivity(Intent(this, WalletActivity::class.java))
+        } else {
+            // Chưa có → tạo mới
+            startActivity(Intent(this, CreateImportActivity::class.java))
+        }
         finish()
     }
 }
