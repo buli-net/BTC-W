@@ -1,0 +1,122 @@
+package com.example.btcwallet
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.card.MaterialCardView
+import org.bitcoinj.params.MainNetParams
+import org.bitcoinj.wallet.Wallet
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
+
+/**
+ * Bước 3: Màn hình chính
+ * - Hiện số dư, tỷ giá, địa chỉ ví đang dùng
+ * - 3 nút: Nhận, Gửi, Quản lý
+ * - Giao diện bo góc, full màn, tự đổi sáng/tối
+ */
+class MainActivity : AppCompatActivity() {
+    
+    private val client = OkHttpClient() // để lấy tỷ giá
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 1. Tạo các view
+        val tvBalance = TextView(this).apply { 
+            textSize = 18f
+            text = "Số dư: 0.00000000 BTC"
+        }
+        val tvRate = TextView(this).apply { 
+            textSize = 16f
+            text = "Tỷ giá: $0 / BTC"
+        }
+        val tvAddr = TextView(this).apply {
+            text = "Địa chỉ: ..."
+        }
+        
+        val btnReceive = Button(this).apply { text = "[Nhận]" }
+        val btnSend = Button(this).apply { text = "[Gửi]" }
+        val btnManage = Button(this).apply { text = "[Quản lý]" }
+
+        // 2. Đặt vào Card (giống hình bạn gửi)
+        val cardContent = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 40, 40, 40)
+            addView(tvBalance)
+            addView(tvRate)
+            addView(tvAddr)
+            // hàng nút
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(btnReceive); addView(btnSend); addView(btnManage)
+            })
+        }
+
+        val card = MaterialCardView(this).apply {
+            radius = 48f // bo góc lớn
+            cardElevation = 0f
+            strokeWidth = 2
+            addView(cardContent)
+        }
+
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 24, 24, 24)
+            addView(card)
+            addView(TextView(context).apply { 
+                text = "\nLịch sử giao dịch (theo ví đang dùng)"
+                textSize = 16f
+            })
+        }
+        setContentView(layout)
+
+        // 3. Lấy thông tin ví hiện tại
+        val seed = WalletManager.getCurrentSeed(this)
+        if (seed != null) {
+            // Tạo ví từ seed để lấy địa chỉ
+            val wallet = Wallet.fromSeed(
+                MainNetParams.get(), 
+                org.bitcoinj.wallet.DeterministicSeed(seed, null, "", 0)
+            )
+            val address = wallet.currentReceiveAddress().toString()
+            tvAddr.text = "Địa chỉ: ${address.take(6)}...${address.takeLast(4)}"
+            
+            // Số dư (cần sync blockchain, tạm hiện 0)
+            tvBalance.text = "Số dư: 0.00000000 BTC"
+            tvBalance.setTextColor(getColor(android.R.color.holo_blue_dark)) // màu xanh như hình
+        }
+
+        // 4. Lấy tỷ giá BTC/USD từ internet
+        Thread {
+            try {
+                val req = Request.Builder()
+                    .url("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")
+                    .build()
+                val res = client.newCall(req).execute()
+                val price = JSONObject(res.body!!.string())
+                    .getJSONObject("bitcoin").getInt("usd")
+                
+                runOnUiThread {
+                    tvRate.text = "Tỷ giá: $$price / BTC"
+                    tvRate.setTextColor(getColor(android.R.color.holo_blue_dark))
+                }
+            } catch (e: Exception) { }
+        }.start()
+
+        // 5. Xử lý nút bấm
+        btnReceive.setOnClickListener { 
+            startActivity(Intent(this, ReceiveActivity::class.java)) 
+        }
+        btnSend.setOnClickListener { 
+            startActivity(Intent(this, SendActivity::class.java)) 
+        }
+        btnManage.setOnClickListener { 
+            startActivity(Intent(this, ManageActivity::class.java)) 
+        }
+    }
+}
