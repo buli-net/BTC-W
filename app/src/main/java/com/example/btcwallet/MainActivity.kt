@@ -1,20 +1,18 @@
 package com.example.btcwallet
 
-import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.btcwallet.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        // ÉP LUÔN VÀO MÀN TẠO VÍ - bỏ qua ví cũ
-        WalletManager.deleteWallet(this) // xóa sạch keystore cũ
-        startActivity(Intent(this, CreateImportActivity::class.java))
-        finish()
+        val tv = TextView(this)
+        tv.text = "APP MOI - BTCWALLET2"
+        tv.textSize = 32f
+        tv.setPadding(50,200,50,200)
+        setContentView(tv)
+        Toast.makeText(this, "DAY LA BAN MOI", Toast.LENGTH_LONG).show()
     }
 }
