@@ -19,7 +19,6 @@
 
         <activity android:name=".CreateImportActivity" android:exported="false" />
         <activity android:name=".PasswordActivity" android:exported="false" />
-        <activity android:name=".WalletActivity" android:exported="false" />
 
     </application>
 
