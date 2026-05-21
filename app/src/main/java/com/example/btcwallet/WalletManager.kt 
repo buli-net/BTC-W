@@ -1,0 +1,51 @@
+package com.example.btcwallet
+
+import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import org.json.JSONArray
+import org.json.JSONObject
+
+/**
+ * Quản lý danh sách ví, lưu seed đã mã hóa bằng Keystore
+ * - Hỗ trợ nhiều ví, nhớ ví đang dùng
+ */
+object WalletManager {
+    
+    // Lấy bộ nhớ mã hóa
+    private fun prefs(context: Context): EncryptedSharedPreferences {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+        return EncryptedSharedPreferences.create(
+            context, "wallets", masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        ) as EncryptedSharedPreferences
+    }
+
+    // Lưu ví mới
+    fun saveWallet(context: Context, name: String, seed: String) {
+        val p = prefs(context)
+        val list = JSONArray(p.getString("list", "[]"))
+        val id = System.currentTimeMillis().toString() // id duy nhất
+        
+        // Thêm ví vào danh sách JSON
+        list.put(JSONObject().put("id", id).put("name", name).put("seed", seed))
+        
+        // Lưu lại và đặt làm ví hiện tại
+        p.edit().putString("list", list.toString()).putString("current", id).apply()
+    }
+
+    // Lấy seed của ví đang dùng
+    fun getCurrentSeed(context: Context): String? {
+        val p = prefs(context)
+        val current = p.getString("current", null) ?: return null
+        val list = JSONArray(p.getString("list", "[]"))
+        
+        for (i in 0 until list.length()) {
+            val o = list.getJSONObject(i)
+            if (o.getString("id") == current) return o.getString("seed")
+        }
+        return null
+    }
+}
