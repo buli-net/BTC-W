@@ -21,11 +21,11 @@ class PasswordActivity : AppCompatActivity() {
                     "receive" -> ReceiveActivity::class.java
                     "send" -> SendActivity::class.java
                     "manage" -> ManageActivity::class.java
-                    else -> MainActivity::class.java
+                    else -> WalletActivity::class.java   // <-- FIX Ở ĐÂY
                 }
                 startActivity(Intent(this, target).putExtra("password", pw))
                 finish()
-            } else Toast.makeText(this,"Sai MK",Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(this, "Sai MK", Toast.LENGTH_SHORT).show()
         }
     }
 }
