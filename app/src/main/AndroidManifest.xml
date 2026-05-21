@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <application android:allowBackup="true" android:label="BtcWallet"
+
+    <application
+        android:allowBackup="false"
+        android:label="BTC Wallet v2"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
         android:theme="@style/Theme.BtcWallet">
-        <activity android:name=".PasswordActivity" android:exported="true">
+
+        <!-- MÀN KHỞI ĐỘNG DUY NHẤT -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateImportActivity"/>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".ReceiveActivity"/>
-        <activity android:name=".SendActivity"/>
-        <activity android:name=".ManageActivity"/>
+
+        <activity android:name=".CreateImportActivity" android:exported="false" />
+        <activity android:name=".PasswordActivity" android:exported="false" />
+        <activity android:name=".WalletActivity" android:exported="false" />
+
     </application>
+
 </manifest>
